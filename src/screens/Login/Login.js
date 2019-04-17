@@ -1,13 +1,33 @@
 import React, { Component } from 'react';
-import { View, Image, TextInput, Button, Text } from "@shoutem/ui";
-
+import PropTypes from 'prop-types';
+import { Alert } from 'react-native';
+import { connect } from 'react-redux';
+import { View, Image, TextInput, Button, Text, NavigationBar, Title } from "@shoutem/ui";
+import { loginUser } from '../../redux/actions';
+  
 import styles from './styles';
-import {  images } from '../../res'
+import {  images } from '../../res';
 
-export default class Login extends Component {
+class Login extends Component {
+  onPressLogin = async () => {
+    const { loginUserDispatch, navigation } = this.props;
+
+    const responseLogin = await loginUserDispatch("teste", "123456");
+
+    if(!responseLogin.isSuccess) {
+      Alert.alert("Alerta", responseLogin.message)
+    } else {
+      navigation.navigate('Home');
+    }
+  }
+
+
   render() {
+    const { navigation } = this.props;
+
     return (
       <View style={styles.container}>
+      <NavigationBar hasHistory centerComponent={<Title>LOGIN</Title>} navigateBack={() => navigation.goBack()} />
         {/* Header */}
         <View style={styles.header}>
             <Image
@@ -28,7 +48,7 @@ export default class Login extends Component {
         </View>
         {/* Section Buttons */}
         <View style={styles.buttonSection}>
-            <Button style={styles.buttonLogin} onPress={() => navigation.navigate('Home')}>
+            <Button style={styles.buttonLogin} onPress={() => this.onPressLogin()}>
               <Text style={styles.buttonLoginText}>LOGIN</Text>
             </Button>
         </View>
@@ -36,3 +56,22 @@ export default class Login extends Component {
     )
   }
 }
+
+Login.propTypes = {
+  navigation: PropTypes.object
+};
+
+const mapStateToProps = state => ({
+  ...state
+});
+
+const mapDispatchToProps = dispatch => ({
+  loginUserDispatch: (username, password) => dispatch(loginUser(username, password)),
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Login);
+
+

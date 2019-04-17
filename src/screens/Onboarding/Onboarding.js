@@ -1,12 +1,19 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux';
 import { Button, Text, View } from "@shoutem/ui";
 import { LinearGradient } from 'expo';
 import { colors } from '../../res';
 import { Logo } from '../../components';
 import styles from './styles';
+import { saveUser } from '../../redux/actions';
 
-export default class Onboarding extends Component {
+class Onboarding extends Component {
+  async componentWillMount() {
+    const { saveUserDispatch } = this.props;
+    await saveUserDispatch("teste", "123456");
+  }
+
   render() {
     const { navigation } = this.props;
 
@@ -32,3 +39,15 @@ Onboarding.propTypes = {
   navigation: PropTypes.object
 }
 
+const mapStateToProps = state => ({
+  ...state
+});
+
+const mapDispatchToProps = dispatch => ({
+  saveUserDispatch: (username, password) => dispatch(saveUser(username, password)),
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Onboarding);

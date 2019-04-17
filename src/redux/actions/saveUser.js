@@ -1,4 +1,5 @@
 import { AsyncStorage } from 'react-native';
+import storage from '../../config/variables';
 
 export const SAVE_USER_REQUEST = 'SAVE_USER_REQUEST';
 export const SAVE_USER_SUCCESS = 'SAVE_USER_SUCCESS';
@@ -29,8 +30,12 @@ const saveUser = (username, password) => async dispatch => {
   dispatch(saveUserRequest());
 
   try {
-    await AsyncStorage.setItem('@taskListStorage:username', username);
-    await AsyncStorage.setItem('@taskListStorage:password', password);
+    if(username && password.length >= 6) {
+        await AsyncStorage.setItem(`${storage.storageName}username`, username);
+        await AsyncStorage.setItem(`${storage.storageName}password`, password);
+    } else {
+        return dispatch(saveUserFailure("Verifique se os campos estão preenchidos"));
+    }
 
     return dispatch(saveUserSuccess("Usuario salvo com sucesso"));
   } catch (error) {

@@ -6,7 +6,7 @@ import configureStore from './src/redux/store';
 
 const store = configureStore();
 
-export default class App extends React.PureComponent {
+export default class App extends React.Component {
   constructor(props) {
     super(props);
 
@@ -48,3 +48,5 @@ export default class App extends React.PureComponent {
     );
   }
 }
+
+
