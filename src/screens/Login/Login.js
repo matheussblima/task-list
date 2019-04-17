@@ -9,10 +9,20 @@ import styles from './styles';
 import {  images } from '../../res';
 
 class Login extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      username: null, 
+      password: null
+    };
+  }
+
   onPressLogin = async () => {
     const { loginUserDispatch, navigation } = this.props;
+    const { username, password } = this.state;
 
-    const responseLogin = await loginUserDispatch("teste", "123456");
+    const responseLogin = await loginUserDispatch(username, password);
 
     if(!responseLogin.isSuccess) {
       Alert.alert("Alerta", responseLogin.message)
@@ -40,10 +50,12 @@ class Login extends Component {
             <TextInput
                 style={styles.inputUsername}
                 placeholder={'Username'}
+                onChangeText={(value) => this.setState({ username: value })}
             />
             <TextInput
                 placeholder={'Senha'}
                 secureTextEntry
+                onChangeText={(value) => this.setState({ password: value })}
             />
         </View>
         {/* Section Buttons */}
