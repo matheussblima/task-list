@@ -3,9 +3,15 @@ import {
     createAppContainer,
   } from 'react-navigation';
 
-import { Home } from '../screens';
+import { Home, Onboarding } from '../screens';
 
 const AppNavigator = createStackNavigator({
+    Onboarding: {
+        screen: Onboarding,
+        navigationOptions: {
+            header: () => null
+        }
+    },
     Home: {
         screen: Home,
         navigationOptions: {
