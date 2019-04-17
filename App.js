@@ -1,6 +1,10 @@
 import React from 'react';
+import { Provider } from 'react-redux';
 import Routes from './src/config/routes'
 import { Font, AppLoading } from 'expo';
+import configureStore from './src/redux/store';
+
+const store = configureStore();
 
 export default class App extends React.PureComponent {
   constructor(props) {
@@ -38,7 +42,9 @@ export default class App extends React.PureComponent {
     }
     
     return (
-      <Routes />
+      <Provider store={store}>
+        <Routes />
+      </Provider>
     );
   }
 }
