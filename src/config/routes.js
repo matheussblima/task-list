@@ -3,11 +3,17 @@ import {
     createAppContainer,
   } from 'react-navigation';
 
-import { Home, Onboarding } from '../screens';
+import { Home, Onboarding, Login } from '../screens';
 
 const AppNavigator = createStackNavigator({
     Onboarding: {
         screen: Onboarding,
+        navigationOptions: {
+            header: () => null
+        }
+    },
+    Login: {
+        screen: Login,
         navigationOptions: {
             header: () => null
         }
