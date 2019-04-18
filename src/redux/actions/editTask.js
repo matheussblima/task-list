@@ -12,10 +12,9 @@ const editTaskRequest = () => ({
   isFetch: true
 });
 
-const editTasKSuccess = (message, tasks) => ({
+const editTasKSuccess = (message) => ({
   type: EDIT_TASK_SUCCESS,
   message,
-  tasks,
   isSuccess: true,
   isFetch: false,
 });
@@ -44,13 +43,13 @@ const editTask = (oldTask, newTask) => async dispatch => {
         taskArray[indexTask].descriptionTask = newTask.descriptionTask;
 
         await AsyncStorage.setItem(`${storage.storageName}task`, JSON.stringify(taskArray));
-        return dispatch(editTasKSuccess("Tarefas editada", JSON.parse(task)));
+        return dispatch(editTasKSuccess("Tarefas editada"));
       } else {
         return dispatch(editTaskFailure("Não foi possivel editar a tarefa"));
       }
     }
-   
   } catch (error) {
+    console.info(error)
     return dispatch(editTaskFailure("Erro ao alterar a tarefa"));
   }
 };

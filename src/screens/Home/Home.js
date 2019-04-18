@@ -26,9 +26,11 @@ class Home extends Component {
 
     this.state = {
       showModal: false,
+      showModalEdit: false,
       nameTask: null,
       descriptionTask: null,
-      data: []
+      data: [],
+      itemListPress: []
     };
     this.renderRowList = this.renderRowList.bind(this);
   }
@@ -71,15 +73,47 @@ class Home extends Component {
   }
 
   // Editar Tarefa
-  onPressEditTask = async (data) => {
+  onPressEditTask = async () => {
     const { editTaskDispatch } = this.props;
+    const { nameTask, descriptionTask, itemListPress } = this.state;
 
-    const responseTask = await editTaskDispatch(data, { descriptionTask: "consegui", nameTask: "feito" }  )
+    const responseTask = await editTaskDispatch(itemListPress, { descriptionTask: descriptionTask, nameTask: nameTask }  )
     await this.getTasks();
 
-    // if(responseTask.isSuccess){ 
-    //   this.setState({ showModal: false });
-    // }
+    console.info(responseTask);
+
+    if(responseTask.isSuccess) { 
+      this.setState({ showModalEdit: false });
+    }
+  }
+
+   // Render Modal Editar
+   renderModalEdit() {
+    const { showModalEdit, nameTask, descriptionTask } = this.state;
+
+    return (
+      <View>
+        <Modal isVisible={showModalEdit} onBackdropPress={() => this.setState({ showModalEdit: false })}>
+          <View style={styles.contanierModal}>
+            <Text style={styles.titleModel}>Editar Tarefa</Text>
+            <TextInput
+                style={styles.inputNameTask}
+                value={nameTask}
+                placeholder={'Nome'}
+                onChangeText={(value) => this.setState({ nameTask: value })}
+            />
+            <TextInput
+                value={descriptionTask}
+                placeholder={'Descrição'}
+                onChangeText={(value) => this.setState({ descriptionTask: value })}
+            />
+            <Button style={styles.buttonAddModal} onPress={() => this.onPressEditTask()}>
+              <Text style={styles.buttonAddModalText}>EDITAR</Text>
+            </Button>
+          </View>
+        </Modal>
+      </View>
+    )
   }
 
   // Render Modal
@@ -112,7 +146,14 @@ class Home extends Component {
   // Render ListView
   renderRowList(data) {
     return(
-      <TouchableOpacity onPress={() => this.onPressEditTask(data)}>
+      <TouchableOpacity onPress={() => {
+        this.setState({ 
+          showModalEdit: true, 
+          nameTask: data.nameTask, 
+          descriptionTask: data.descriptionTask, 
+          itemListPress: data 
+        })}
+      }>
         <Row styleName="small">
           <Icon name="page" />
           <View styleName="vertical">
@@ -151,6 +192,7 @@ class Home extends Component {
     return (
       <Container>
         {this.renderModal()}
+        {this.renderModalEdit()}
         <NavigationBar 
           centerComponent={<Title>TAREFAS</Title>}
           rightComponent={(
