@@ -13,7 +13,7 @@ import {
   Text, 
   TextInput } from "@shoutem/ui";
 import { connect } from 'react-redux';
-import { addTask } from '../../redux/actions';
+import { addTask, showTask } from '../../redux/actions';
 import { Container } from '../../components';
 import Modal from "react-native-modal";
 
@@ -28,19 +28,19 @@ class Home extends Component {
       showModal: false,
       nameTask: null,
       descriptionTask: null,
-      data: [
-        {
-          id: 0,
-          name: "Fazer bolo",
-          descricao: "Fazer o bolo amanhã"
-        },
-        {
-          id: 0,
-          name: "Fazer bolo",
-          descricao: "Fazer o bolo amanhã"
-        }
-      ]
+      data: []
     };
+  }
+
+  async componentDidMount() {
+   await this.getTasks();
+  }
+
+  getTasks = async () => {
+    const { showTaskDispatch } = this.props;
+
+    const tasksResponse = await showTaskDispatch();
+    this.setState({ data: tasksResponse.tasks });
   }
 
   onPressPlus = () => {
@@ -58,8 +58,7 @@ class Home extends Component {
     }
 
     const responseTask = await addTaskDispatch(taskInfo);
-
-    console.info(responseTask);
+    await this.getTasks();
 
     if(responseTask.isSuccess){ 
       this.setState({ showModal: false });
@@ -99,8 +98,8 @@ class Home extends Component {
         <Row styleName="small">
           <Icon name="page" />
           <View styleName="vertical">
-            <Subtitle>{data.name}</Subtitle>
-            <Text numberOfLines={1}>{data.descricao}</Text>
+            <Subtitle>{data.nameTask}</Subtitle>
+            <Text numberOfLines={1}>{data.descriptionTask}</Text>
           </View>
           <Icon styleName="disclosure" name="right-arrow" />
         </Row>
@@ -112,7 +111,7 @@ class Home extends Component {
   render() {
     const { data } = this.state;
 
-    if(!data.length > 0) {
+    if(data === undefined || data.length <= 0) {
       return(
         <Container>
           {this.renderModal()}
@@ -158,6 +157,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   addTaskDispatch: (name, description) => dispatch(addTask(name, description)),
+  showTaskDispatch: () => dispatch(showTask())
 });
 
 export default connect(

@@ -1,5 +1,6 @@
 import saveUser from './saveUser';
-import loginUser from './loginUser';
 import addTask from './addTask';
+import loginUser from './loginUser';
+import showTask from   './showTask';
 
-export { saveUser, loginUser, addTask };
+export { saveUser, addTask, loginUser, showTask };
