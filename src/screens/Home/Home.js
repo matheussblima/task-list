@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
+import { TouchableOpacity } from 'react-native';
 import { 
   View, 
   NavigationBar, 
   Title, 
   ListView, 
-  ScrollView,
   Icon, 
   Subtitle, 
   Divider, 
@@ -13,7 +13,7 @@ import {
   Text, 
   TextInput } from "@shoutem/ui";
 import { connect } from 'react-redux';
-import { addTask, showTask } from '../../redux/actions';
+import { addTask, showTask, editTask } from '../../redux/actions';
 import { Container } from '../../components';
 import Modal from "react-native-modal";
 
@@ -30,12 +30,14 @@ class Home extends Component {
       descriptionTask: null,
       data: []
     };
+    this.renderRowList = this.renderRowList.bind(this);
   }
 
   async componentDidMount() {
    await this.getTasks();
   }
 
+  // Pega as tarefas
   getTasks = async () => {
     const { showTaskDispatch } = this.props;
 
@@ -43,10 +45,12 @@ class Home extends Component {
     this.setState({ data: tasksResponse.tasks });
   }
 
+  // Abre o modal para adicionar novas tarefas
   onPressPlus = () => {
     this.setState({ showModal: true });
   }
 
+  // Adicionando tarefas
   onPressAddTask = async () => {
     const { addTaskDispatch } = this.props;
     const { descriptionTask, nameTask } = this.state;
@@ -66,6 +70,19 @@ class Home extends Component {
     
   }
 
+  // Editar Tarefa
+  onPressEditTask = async (data) => {
+    const { editTaskDispatch } = this.props;
+
+    const responseTask = await editTaskDispatch(data, { descriptionTask: "consegui", nameTask: "feito" }  )
+    await this.getTasks();
+
+    // if(responseTask.isSuccess){ 
+    //   this.setState({ showModal: false });
+    // }
+  }
+
+  // Render Modal
   renderModal() {
     const { showModal } = this.state;
 
@@ -92,9 +109,10 @@ class Home extends Component {
     )
   }
 
+  // Render ListView
   renderRowList(data) {
     return(
-      <View>
+      <TouchableOpacity onPress={() => this.onPressEditTask(data)}>
         <Row styleName="small">
           <Icon name="page" />
           <View styleName="vertical">
@@ -104,7 +122,7 @@ class Home extends Component {
           <Icon styleName="disclosure" name="right-arrow" />
         </Row>
         <Divider styleName="line" />
-      </View>
+      </TouchableOpacity>
     );
   }
 
@@ -157,6 +175,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   addTaskDispatch: (name, description) => dispatch(addTask(name, description)),
+  editTaskDispatch: (oldTask, newTask) => dispatch(editTask(oldTask, newTask)),
   showTaskDispatch: () => dispatch(showTask())
 });
 

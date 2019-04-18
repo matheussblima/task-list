@@ -1,13 +1,17 @@
 import { combineReducers } from 'redux';
 
 import saveUser from './saveUser';
-import loginUser from './loginUser';
 import addTask from './addTask';
-import showTask from './showTask';
+import loginUser from './loginUser';
+import showTask from   './showTask';
+import deleteTask from './deleteTask';
+import editTask from './editTask';
 
 export default combineReducers({
     saveUser,
     loginUser,
     addTask,
-    showTask
+    showTask,
+    deleteTask,
+    editTask
 });

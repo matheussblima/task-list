@@ -27,21 +27,23 @@ const showTaskFailure = (message) => ({
   isFetch: false
 });
 
-const saveUser = () => async dispatch => {
+const showTask = () => async dispatch => {
   dispatch(showTaskRequest());
 
   try {
     const task = await AsyncStorage.getItem(`${storage.storageName}task`);
-
-    if(JSON.parse(task).length > 0) {
-        return dispatch(showTasKSuccess("Verifique se os campos estão preenchidos", JSON.parse(task)));
-    } else {
+    
+    if(task !== null) {
+      if(JSON.parse(task).length > 0) {
+        return dispatch(showTasKSuccess("Tarefas Encontradas", JSON.parse(task)));
+      } else {
         return dispatch(showTaskFailure("Não tem tarefas"));
+      }
     }
    
   } catch (error) {
-    return dispatch(showTaskFailure("Erro ao buscar o usuario"));
+    return dispatch(showTaskFailure("Erro ao buscar as Tarefas"));
   }
 };
 
-export default saveUser;
+export default showTask;

@@ -34,7 +34,7 @@ const addTask = (taskInfo) => async dispatch => {
         let task = await AsyncStorage.getItem(`${storage.storageName}task`);
         let taskArray = [];
 
-        if( task !== null) {
+        if(task !== null) {
           if(JSON.parse(task).length > 0) {
             taskArray = JSON.parse(task);
             taskInfo.id = taskArray.length - 1;
