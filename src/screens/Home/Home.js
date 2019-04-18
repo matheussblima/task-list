@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { TouchableOpacity } from 'react-native';
+import AlertAsync from "react-native-alert-async";
 import { 
   View, 
   NavigationBar, 
@@ -13,7 +14,7 @@ import {
   Text, 
   TextInput } from "@shoutem/ui";
 import { connect } from 'react-redux';
-import { addTask, showTask, editTask } from '../../redux/actions';
+import { addTask, showTask, editTask, deleteTask } from '../../redux/actions';
 import { Container } from '../../components';
 import Modal from "react-native-modal";
 
@@ -45,6 +46,27 @@ class Home extends Component {
 
     const tasksResponse = await showTaskDispatch();
     this.setState({ data: tasksResponse.tasks });
+  }
+
+  // Deletar Tarefa
+  onLongPressdeleteTask =  async (data) => {
+    const { deleteTaskDispatch } = this.props;
+
+    const wantDelete = await AlertAsync(
+        'Alerta', 
+        'Deseja deletar a tarefa?', [
+        {text: 'Não', onPress: () => false},
+        {text: 'Sim', onPress: () => true}
+    ]);
+
+    console.info(wantDelete);
+
+    if(wantDelete) {
+      const responseTask = await deleteTaskDispatch(data);
+      if(responseTask.isSuccess) {
+        await this.getTasks();
+      }
+    }
   }
 
   // Abre o modal para adicionar novas tarefas
@@ -146,7 +168,9 @@ class Home extends Component {
   // Render ListView
   renderRowList(data) {
     return(
-      <TouchableOpacity onPress={() => {
+      <TouchableOpacity 
+      onLongPress={() => this.onLongPressdeleteTask(data)}
+      onPress={() => {
         this.setState({ 
           showModalEdit: true, 
           nameTask: data.nameTask, 
@@ -218,7 +242,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   addTaskDispatch: (name, description) => dispatch(addTask(name, description)),
   editTaskDispatch: (oldTask, newTask) => dispatch(editTask(oldTask, newTask)),
-  showTaskDispatch: () => dispatch(showTask())
+  showTaskDispatch: () => dispatch(showTask()),
+  deleteTaskDispatch: (deleteTaskselect) => dispatch(deleteTask(deleteTaskselect))
 });
 
 export default connect(
