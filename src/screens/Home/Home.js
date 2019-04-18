@@ -4,13 +4,18 @@ import {
   NavigationBar, 
   Title, 
   ListView, 
+  ScrollView,
   Icon, 
   Subtitle, 
   Divider, 
   Row, 
   Button,
-  Text } from "@shoutem/ui";
-  import { Container } from '../../components';
+  Text, 
+  TextInput } from "@shoutem/ui";
+import { connect } from 'react-redux';
+import { addTask } from '../../redux/actions';
+import { Container } from '../../components';
+import Modal from "react-native-modal";
 
 import styles from './styles';
 
@@ -20,6 +25,9 @@ class Home extends Component {
     super(props);
 
     this.state = {
+      showModal: false,
+      nameTask: null,
+      descriptionTask: null,
       data: [
         {
           id: 0,
@@ -35,7 +43,55 @@ class Home extends Component {
     };
   }
 
-  onPressPlus = () => {}
+  onPressPlus = () => {
+    this.setState({ showModal: true });
+  }
+
+  onPressAddTask = async () => {
+    const { addTaskDispatch } = this.props;
+    const { descriptionTask, nameTask } = this.state;
+
+    const taskInfo = {
+      id: -1,
+      nameTask,
+      descriptionTask,
+    }
+
+    const responseTask = await addTaskDispatch(taskInfo);
+
+    console.info(responseTask);
+
+    if(responseTask.isSuccess){ 
+      this.setState({ showModal: false });
+    }
+    
+  }
+
+  renderModal() {
+    const { showModal } = this.state;
+
+    return (
+      <View>
+        <Modal isVisible={showModal} onBackdropPress={() => this.setState({ showModal: false })}>
+          <View style={styles.contanierModal}>
+            <Text style={styles.titleModel}>Adicione uma Tarefa</Text>
+            <TextInput
+                style={styles.inputNameTask}
+                placeholder={'Nome'}
+                onChangeText={(value) => this.setState({ nameTask: value })}
+            />
+            <TextInput
+                placeholder={'Descrição'}
+                onChangeText={(value) => this.setState({ descriptionTask: value })}
+            />
+            <Button style={styles.buttonAddModal} onPress={() => this.onPressAddTask()}>
+              <Text style={styles.buttonAddModalText}>ADICIONAR</Text>
+            </Button>
+          </View>
+        </Modal>
+      </View>
+    )
+  }
 
   renderRowList(data) {
     return(
@@ -59,6 +115,7 @@ class Home extends Component {
     if(!data.length > 0) {
       return(
         <Container>
+          {this.renderModal()}
           <NavigationBar 
             centerComponent={<Title>TAREFAS</Title>}
             rightComponent={(
@@ -76,6 +133,7 @@ class Home extends Component {
 
     return (
       <Container>
+        {this.renderModal()}
         <NavigationBar 
           centerComponent={<Title>TAREFAS</Title>}
           rightComponent={(
@@ -93,4 +151,16 @@ class Home extends Component {
   }
 }
 
-export default Home;
+
+const mapStateToProps = state => ({
+  ...state
+});
+
+const mapDispatchToProps = dispatch => ({
+  addTaskDispatch: (name, description) => dispatch(addTask(name, description)),
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Home);
