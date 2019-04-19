@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, Alert } from 'react-native';
 import AlertAsync from "react-native-alert-async";
 import { 
   View, 
@@ -59,12 +59,12 @@ class Home extends Component {
         {text: 'Sim', onPress: () => true}
     ]);
 
-    console.info(wantDelete);
-
     if(wantDelete) {
       const responseTask = await deleteTaskDispatch(data);
       if(responseTask.isSuccess) {
         await this.getTasks();
+      } else {
+        Alert.alert("Alerta", responseTask.message)
       }
     }
   }
@@ -90,6 +90,9 @@ class Home extends Component {
 
     if(responseTask.isSuccess){ 
       this.setState({ showModal: false });
+      this.setState({ nameTask: null, descriptionTask: null });
+    } else {
+      Alert.alert("Alerta", responseTask.message)
     }
     
   }
@@ -106,7 +109,11 @@ class Home extends Component {
 
     if(responseTask.isSuccess) { 
       this.setState({ showModalEdit: false });
+      this.setState({ nameTask: null, descriptionTask: null });
+    } else {
+      Alert.alert("Alerta", responseTask.message)
     }
+
   }
 
    // Render Modal Editar

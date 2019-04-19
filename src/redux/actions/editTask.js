@@ -30,23 +30,27 @@ const editTask = (oldTask, newTask) => async dispatch => {
   dispatch(editTaskRequest());
 
   try {
-    const task = await AsyncStorage.getItem(`${storage.storageName}task`);
-    let taskArray = [];
+    if(newTask.nameTask && newTask.descriptionTask) {
+        const task = await AsyncStorage.getItem(`${storage.storageName}task`);
+        let taskArray = [];
+        
+        if(task !== null) {
+          if(JSON.parse(task).length > 0) {
     
-    if(task !== null) {
-      if(JSON.parse(task).length > 0) {
-
-        taskArray = JSON.parse(task);
-        const indexTask = taskArray.findIndex((task) => task.id === oldTask.id);
-
-        taskArray[indexTask].nameTask = newTask.nameTask;
-        taskArray[indexTask].descriptionTask = newTask.descriptionTask;
-
-        await AsyncStorage.setItem(`${storage.storageName}task`, JSON.stringify(taskArray));
-        return dispatch(editTasKSuccess("Tarefas editada"));
-      } else {
-        return dispatch(editTaskFailure("Não foi possivel editar a tarefa"));
+            taskArray = JSON.parse(task);
+            const indexTask = taskArray.findIndex((task) => task.id === oldTask.id);
+    
+            taskArray[indexTask].nameTask = newTask.nameTask;
+            taskArray[indexTask].descriptionTask = newTask.descriptionTask;
+    
+            await AsyncStorage.setItem(`${storage.storageName}task`, JSON.stringify(taskArray));
+            return dispatch(editTasKSuccess("Tarefas editada"));
+          } else {
+            return dispatch(editTaskFailure("Não foi possivel editar a tarefa"));
+        }
       }
+    } else {
+      return dispatch(editTaskFailure("Verifique se os campos estão preenchidos"));
     }
   } catch (error) {
     console.info(error)
